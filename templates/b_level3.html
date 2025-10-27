@@ -1,1 +1,16 @@
+<h1>Above Average Infection Page</h1>
+
+<form method="POST">
+    <input name="infection" placeholder="infection type">
+    <input name="year" placeholder="year">
+    <button type="submit">Show</button>
+</form>
+
+{% if rows %}
+<ul>
+{% for r in rows %}
+  <li>{{ r[0] }} - {{ r[1] }}</li>
+{% endfor %}
+</ul>
+{% endif %}
 
