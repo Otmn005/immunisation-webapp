@@ -6,7 +6,6 @@ app = Flask(__name__)
 #  Home / Landing Page
 @app.route("/")
 def index():
-    
     return render_template("index.html")
 
 
@@ -41,7 +40,7 @@ def b_level3():
     return render_template("b_level3.html", rows=rows)
 
 
-#  Sub-task A Routes---
+#  Sub-task A Routes
 @app.route('/a_level1')
 def a_level1():
     return render_template("a_level1.html")
@@ -51,7 +50,6 @@ def a_level1():
 def a_level2():
     rows1, rows2 = [], []
     if request.method == 'POST':
-        # placeholder demo values for now
         rows1 = [
             {'antigen': 'MCV1', 'year': 2022, 'country': 'Australia', 'region': 'Oceania', 'coverage': 93.4},
             {'antigen': 'MCV1', 'year': 2022, 'country': 'Vietnam', 'region': 'SE Asia', 'coverage': 95.1}
@@ -67,11 +65,12 @@ def a_level2():
 def a_level3():
     rows = []
     if request.method == 'POST':
-        # simple placeholder top improvements
         rows = [
             {'country': 'Kenya', 'vaccination_rate_increase': 14.2, 'start_year': 2018, 'end_year': 2024},
-            {'country': 'Laos', 'vacc
+            {'country': 'Laos', 'vaccination_rate_increase': 11.6, 'start_year': 2018, 'end_year': 2024}
+        ]
 
+    return render_template("a_level3.html", rows=rows)
 
 
 if __name__ == "__main__":
