@@ -19,11 +19,24 @@ def b_level1():
 def b_level2():
     data = []
     if request.method == 'POST':
-        # placeholder data until DB added later
-        data = [
-            ("Brazil", "Measles", 2022, 5000, 50, 3.2),
-            ("Nigeria", "Measles", 2022, 12000, 100, 5.4)
-        ]
+        econ = request.form['econ'].strip()
+        infection = request.form['infection'].strip()
+        year = request.form['year'].strip()
+
+        # simple guard: ignore empty form
+        if econ and infection and year.isdigit():
+            conn = sqlite3.connect('immunisation.db')
+            cur = conn.cursor()
+            query = """
+                SELECT Country, InfectionType, Year, Cases, Deaths,
+                       ROUND(Cases * 100000.0 / Population, 2) AS Rate
+                FROM infection
+                WHERE EconomicStatus = ? AND InfectionType = ? AND Year = ?;
+            """
+            cur.execute(query, (econ, infection, int(year)))
+            data = cur.fetchall()
+            conn.close()
+
     return render_template("b_level2.html", data=data)
 
 
