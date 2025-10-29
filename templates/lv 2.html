@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Focused Vaccination Rates by Country & Region</title>
+</head>
+<body>
+<h1>Focused View: Vaccination Rates (Level 2)</h1>
+<form method="get">
+    Year: <input name="year" type="number">
+    Antigen: <input name="antigen">
+    <button type="submit">Filter</button>
+</form>
+
+<h2>Table 1: Countries that Met 90% Target</h2>
+<table border="1">
+<tr>
+    <th>Antigen</th>
+    <th>Year</th>
+    <th>Country</th>
+    <th>Region</th>
+    <th>Percentage of Target</th>
+</tr>
+{% for row in rows1 %}
+<tr>
+    <td>{{ row['antigen'] }}</td>
+    <td>{{ row['year'] }}</td>
+    <td>{{ row['country'] }}</td>
+    <td>{{ row['region'] }}</td>
+    <td>{{ "%.1f"|format(row['coverage']) }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Table 2: Number of Countries per Region that Met 90% Target</h2>
+<table border="1">
+<tr>
+    <th>Antigen</th>
+    <th>Year</th>
+    <th>Countries that met 90% of target</th>
+    <th>Region</th>
+</tr>
+{% for row in rows2 %}
+<tr>
+    <td>{{ row['antigen'] }}</td>
+    <td>{{ row['year'] }}</td>
+    <td>{{ row['country_count'] }}</td>
+    <td>{{ row['region'] }}</td>
+</tr>
+{% endfor %}
+</table>
+</body>
+</html>

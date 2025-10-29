@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Level 3: Vaccination Rate Improvement</title>
+</head>
+<body>
+<h1>Identify Countries with the Biggest Improvement in Vaccination Rates</h1>
+<form method="get">
+    Start Year: <input name="start_year" type="number" required>
+    End Year: <input name="end_year" type="number" required>
+    Antigen: <input name="antigen" required>
+    Top N: <input name="top_n" type="number" value="10" min="1" required>
+    <button type="submit">Analyze</button>
+</form>
+
+{% if rows %}
+<table border="1">
+    <tr>
+        <th>Country</th>
+        <th>Vaccination Rate Increase</th>
+        <th>Start Year</th>
+        <th>End Year</th>
+    </tr>
+    {% for row in rows %}
+    <tr>
+        <td>{{ row['country'] }}</td>
+        <td>{{ row['vaccination_rate_increase'] }}%</td>
+        <td>{{ row['start_year'] }}</td>
+        <td>{{ row['end_year'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+</body>
+</html>
