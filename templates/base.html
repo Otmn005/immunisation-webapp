@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Immunisation Dashboard{% endblock %} - COSC3106</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Header section with site branding -->
+    <header role="banner">
+        <div class="container">
+            <h1>Immunisation Dashboard</h1>
+            <p class="tagline">Investigating Preventable Infectious Diseases</p>
+        </div>
+    </header>
+
+    <!-- Main navigation menu with ARIA attributes for accessibility -->
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('index') }}" aria-label="Home page">Home</a></li>
+                <li class="nav-divider">A-Level:</li>
+                <li><a href="{{ url_for('a_level1') }}" aria-label="A-Level 1: Landing Page">A1: Landing</a></li>
+                <li><a href="{{ url_for('a_level2') }}" aria-label="A-Level 2: Vaccination Coverage">A2: Coverage</a></li>
+                <li><a href="{{ url_for('a_level3') }}" aria-label="A-Level 3: Improvement Analysis">A3: Improvement</a></li>
+                <li class="nav-divider">B-Level:</li>
+                <li><a href="{{ url_for('b_level1') }}" aria-label="B-Level 1: Mission Statement">B1: Mission</a></li>
+                <li><a href="{{ url_for('b_level2') }}" aria-label="B-Level 2: Infection Data">B2: Infections</a></li>
+                <li><a href="{{ url_for('b_level3') }}" aria-label="B-Level 3: Above Average">B3: Analysis</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main content area where page-specific content will be inserted -->
+    <main role="main" class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>
