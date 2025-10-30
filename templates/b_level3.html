@@ -1,16 +1,146 @@
-<h1>Above Average Infection Page</h1>
 
-<form method="POST">
-    <input name="infection" placeholder="infection type">
-    <input name="year" placeholder="year">
-    <button type="submit">Show</button>
-</form>
+{% extends "base.html" %}
 
-{% if rows %}
-<ul>
-{% for r in rows %}
-  <li>{{ r[0] }} - {{ r[1] }}</li>
-{% endfor %}
-</ul>
+{% block title %}B-Level 3 - Above Average Analysis{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h2>Above Average Infection Rate Analysis</h2>
+    <p>Identify countries with infection rates exceeding the global average.</p>
+</section>
+
+<!-- Error message display -->
+{% if error_message %}
+<div class="alert alert-error" role="alert" aria-live="polite">
+    <strong>Error:</strong> {{ error_message }}
+</div>
 {% endif %}
 
+<!-- Filter form -->
+<section class="filter-section">
+    <h3>Analysis Parameters</h3>
+    <form method="POST" action="{{ url_for('b_level3') }}" class="filter-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="infection_type">Infection Type:</label>
+                <select id="infection_type" name="infection_type" required aria-label="Select infection type" aria-required="true">
+                    <option value="">-- Choose infection type --</option>
+                    {% for infection in infection_types %}
+                    <option value="{{ infection['id'] }}" {% if selected_infection and selected_infection == infection['id']|string %}selected{% endif %}>
+                        {{ infection['description'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <select id="year" name="year" required aria-label="Select year" aria-required="true">
+                    <option value="">-- Choose a year --</option>
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if selected_year and selected_year == year|string %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="top_n">Number of Countries:</label>
+                <input type="number" id="top_n" name="top_n" min="1" max="50" value="{{ top_n }}" required 
+                       aria-label="Number of top countries to display" aria-required="true">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" aria-label="Analyze infection rates">Analyze Infection Rates</button>
+    </form>
+</section>
+
+<!-- Results section -->
+{% if selected_infection and selected_year %}
+<section class="results-section">
+    {% if global_average is not none %}
+    <!-- Display global average at top for easy viewing -->
+    <div class="highlight-box">
+        <h3>Global Average Infection Rate</h3>
+        <p class="stat-large">{{ global_average }} cases per 100,000 people</p>
+        <p class="stat-label">Average for selected infection type in {{ selected_year }}</p>
+    </div>
+    {% endif %}
+
+    <h3>Countries Exceeding Global Average</h3>
+
+    {% if results %}
+    <div class="table-container">
+        <table class="data-table" role="table" aria-label="Countries with above average infection rates">
+            <thead>
+                <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Infection Type</th>
+                    <th scope="col">Cases per 100,000</th>
+                    <th scope="col">Total Cases</th>
+                    <th scope="col">Year</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td><strong>{{ loop.index }}</strong></td>
+                    <td>{{ row['country'] }}</td>
+                    <td>{{ row['infection_type'] }}</td>
+                    <td class="highlight"><strong>{{ row['infection_per_100k'] }}</strong></td>
+                    <td>{{ "{:,}".format(row['total_cases']) }}</td>
+                    <td>{{ row['year'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="result-count" aria-live="polite">
+            Showing top {{ results|length }} countries with infection rates above the global average of {{ global_average }}
+        </p>
+    </div>
+
+    <!-- Analysis insights -->
+    <div class="info-box">
+        <h4>Analysis Insights</h4>
+        <p>
+            The countries listed above have infection rates that exceed the global average of 
+            <strong>{{ global_average }}</strong> cases per 100,000 people for {{ selected_year }}. 
+            This analysis helps identify regions that may need additional health interventions or 
+            vaccination campaigns to reduce disease burden.
+        </p>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert" aria-live="polite">
+        {% if global_average is not none %}
+        No countries found with infection rates above the global average of {{ global_average }} 
+        cases per 100,000 people. This could indicate:
+        {% else %}
+        No infection data available for the selected criteria. This could indicate:
+        {% endif %}
+        <ul>
+            <li>Insufficient data for the selected year</li>
+            <li>Very uniform infection rates across countries</li>
+            <li>Missing population data for rate calculations</li>
+        </ul>
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<!-- Instructions -->
+{% if not selected_infection or not selected_year %}
+<section class="info-box">
+    <h3>How to Use This Analysis</h3>
+    <ol>
+        <li>Select an <strong>infection type</strong> from the dropdown menu</li>
+        <li>Choose a <strong>year</strong> to analyze</li>
+        <li>Specify how many <strong>top countries</strong> you want to see (1-50)</li>
+        <li>Click "Analyze Infection Rates" to view results</li>
+    </ol>
+    <p>
+        The analysis will show the global average infection rate and list countries whose rates 
+        exceed this average, helping identify areas with higher disease burden.
+    </p>
+</section>
+{% endif %}
+{% endblock %}
