@@ -1,31 +1,147 @@
-<h1>Infection by Economic Status</h1>
-<form method="POST">
-    <label>Status:</label>
-    <input name="econ">
 
-    <label>Infection:</label>
-    <input name="infection">
+{% extends "base.html" %}
 
-    <label>Year:</label>
-    <input name="year">
+{% block title %}B-Level 2 - Infection Data{% endblock %}
 
-    <button type="submit">Search</button>
-</form>
+{% block content %}
+<section class="page-header">
+    <h2>Infection Data by Economic Status</h2>
+    <p>Explore preventable disease cases across different economic phases and countries.</p>
+</section>
 
-{% if data %}
-<table border="1">
-    <tr>
-      <th>Country</th><th>Type</th><th>Year</th><th>Cases</th><th>Deaths</th><th>Rate</th>
-    </tr>
-    {% for row in data %}
-    <tr>
-      <td>{{ row[0] }}</td>
-      <td>{{ row[1] }}</td>
-      <td>{{ row[2] }}</td>
-      <td>{{ row[3] }}</td>
-      <td>{{ row[4] }}</td>
-      <td>{{ row[5] }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<!-- Error message display -->
+{% if error_message %}
+<div class="alert alert-error" role="alert" aria-live="polite">
+    <strong>Error:</strong> {{ error_message }}
+</div>
 {% endif %}
+
+<!-- Filter form -->
+<section class="filter-section">
+    <h3>Filter Options</h3>
+    <form method="POST" action="{{ url_for('b_level2') }}" class="filter-form">
+        <div class="form-group">
+            <label for="economy">Economic Status:</label>
+            <select id="economy" name="economy" required aria-label="Select economic status" aria-required="true">
+                <option value="">-- Choose economic status --</option>
+                {% for economy in economic_statuses %}
+                <option value="{{ economy }}" {% if selected_economy == economy %}selected{% endif %}>{{ economy }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="infection_type">Infection Type:</label>
+            <select id="infection_type" name="infection_type" required aria-label="Select infection type" aria-required="true">
+                <option value="">-- Choose infection type --</option>
+                {% for infection in infection_types %}
+                <option value="{{ infection['id'] }}" {% if selected_infection and selected_infection == infection['id']|string %}selected{% endif %}>
+                    {{ infection['description'] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="year">Year:</label>
+            <select id="year" name="year" required aria-label="Select year" aria-required="true">
+                <option value="">-- Choose a year --</option>
+                {% for year in years %}
+                <option value="{{ year }}" {% if selected_year and selected_year == year|string %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" aria-label="Apply filters and view infection data">View Infection Data</button>
+    </form>
+</section>
+
+<!-- Results section -->
+{% if selected_economy and selected_infection and selected_year %}
+<section class="results-section">
+    <h3>Infection Data Results</h3>
+
+    <!-- Detailed table: Cases per 100,000 people -->
+    <div class="table-container">
+        <h4>Cases per 100,000 People - {{ selected_economy }} Countries ({{ selected_year }})</h4>
+        {% if detailed_results %}
+        <table class="data-table" role="table" aria-label="Infection cases per 100,000 people by country">
+            <thead>
+                <tr>
+                    <th scope="col">Disease</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Economic Phase</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Cases per 100,000</th>
+                    <th scope="col">Total Cases</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in detailed_results %}
+                <tr>
+                    <td>{{ row['disease'] }}</td>
+                    <td>{{ row['country'] }}</td>
+                    <td>{{ row['economic_phase'] }}</td>
+                    <td>{{ row['year'] }}</td>
+                    <td><strong>{{ row['cases_per_100k'] }}</strong></td>
+                    <td>{{ "{:,}".format(row['total_cases']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="result-count" aria-live="polite">Showing {{ detailed_results|length }} countries</p>
+        {% else %}
+        <div class="alert alert-info" role="alert" aria-live="polite">
+            No infection data found for {{ selected_economy }} countries in {{ selected_year }}.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Summary table: Total cases by economic phase -->
+    <div class="table-container">
+        <h4>Summary by Economic Phase ({{ selected_year }})</h4>
+        {% if summary_results %}
+        <table class="data-table" role="table" aria-label="Total infection cases summarized by economic phase">
+            <thead>
+                <tr>
+                    <th scope="col">Disease</th>
+                    <th scope="col">Economic Phase</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Total Cases</th>
+                    <th scope="col">Countries Affected</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in summary_results %}
+                <tr>
+                    <td>{{ row['disease'] }}</td>
+                    <td>{{ row['economic_phase'] }}</td>
+                    <td>{{ row['year'] }}</td>
+                    <td><strong>{{ "{:,}".format(row['total_cases']) }}</strong></td>
+                    <td>{{ row['country_count'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info" role="alert" aria-live="polite">
+            No summary data available for the selected infection type in {{ selected_year }}.
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Instructions -->
+{% if not selected_economy or not selected_infection or not selected_year %}
+<section class="info-box">
+    <h3>How to Use This Page</h3>
+    <p>Select an economic status, infection type, and year from the dropdown menus above to view:</p>
+    <ul>
+        <li><strong>Detailed Table:</strong> Cases per 100,000 people for each country in the selected economic phase</li>
+        <li><strong>Summary Table:</strong> Total cases across all economic phases for comparison</li>
+    </ul>
+    <p>This analysis helps understand how infectious diseases affect countries with different economic statuses.</p>
+</section>
+{% endif %}
+{% endblock %}
