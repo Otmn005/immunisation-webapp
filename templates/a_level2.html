@@ -1,52 +1,130 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Focused Vaccination Rates by Country & Region</title>
-</head>
-<body>
-<h1>Focused View: Vaccination Rates (Level 2)</h1>
-<form method="get">
-    Year: <input name="year" type="number">
-    Antigen: <input name="antigen">
-    <button type="submit">Filter</button>
-</form>
 
-<h2>Table 1: Countries that Met 90% Target</h2>
-<table border="1">
-<tr>
-    <th>Antigen</th>
-    <th>Year</th>
-    <th>Country</th>
-    <th>Region</th>
-    <th>Percentage of Target</th>
-</tr>
-{% for row in rows1 %}
-<tr>
-    <td>{{ row['antigen'] }}</td>
-    <td>{{ row['year'] }}</td>
-    <td>{{ row['country'] }}</td>
-    <td>{{ row['region'] }}</td>
-    <td>{{ "%.1f"|format(row['coverage']) }}</td>
-</tr>
-{% endfor %}
-</table>
+{% extends "base.html" %}
 
-<h2>Table 2: Number of Countries per Region that Met 90% Target</h2>
-<table border="1">
-<tr>
-    <th>Antigen</th>
-    <th>Year</th>
-    <th>Countries that met 90% of target</th>
-    <th>Region</th>
-</tr>
-{% for row in rows2 %}
-<tr>
-    <td>{{ row['antigen'] }}</td>
-    <td>{{ row['year'] }}</td>
-    <td>{{ row['country_count'] }}</td>
-    <td>{{ row['region'] }}</td>
-</tr>
-{% endfor %}
-</table>
-</body>
-</html>
+{% block title %}A-Level 2 - Vaccination Coverage{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h2>Vaccination Coverage Analysis</h2>
+    <p>Explore which countries and regions meet 90% vaccination targets by year and antigen type.</p>
+</section>
+
+<!-- Error message display -->
+{% if error_message %}
+<div class="alert alert-error" role="alert" aria-live="polite">
+    <strong>Error:</strong> {{ error_message }}
+</div>
+{% endif %}
+
+<!-- Filter form with accessible labels and ARIA attributes -->
+<section class="filter-section">
+    <h3>Filter Options</h3>
+    <form method="POST" action="{{ url_for('a_level2') }}" class="filter-form">
+        <div class="form-group">
+            <label for="year">Select Year:</label>
+            <select id="year" name="year" required aria-label="Select year for vaccination data" aria-required="true">
+                <option value="">-- Choose a year --</option>
+                {% for year in years %}
+                <option value="{{ year }}" {% if selected_year and selected_year == year|string %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="antigen">Select Antigen:</label>
+            <select id="antigen" name="antigen" required aria-label="Select antigen type" aria-required="true">
+                <option value="">-- Choose an antigen --</option>
+                {% for antigen in antigens %}
+                <option value="{{ antigen }}" {% if selected_antigen == antigen %}selected{% endif %}>{{ antigen }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" aria-label="Apply filters and view results">Apply Filters</button>
+    </form>
+</section>
+
+<!-- Results section - only shown after form submission -->
+{% if selected_year and selected_antigen %}
+<section class="results-section">
+    <h3>Results for {{ selected_antigen }} in {{ selected_year }}</h3>
+
+    <!-- Table 1: Countries with >= 90% coverage -->
+    <div class="table-container">
+        <h4>Countries Meeting 90% Vaccination Target</h4>
+        {% if countries_table %}
+        <table class="data-table" role="table" aria-label="Countries with 90% or higher vaccination coverage">
+            <thead>
+                <tr>
+                    <th scope="col">Antigen</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">Coverage (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in countries_table %}
+                <tr>
+                    <td>{{ row['antigen'] }}</td>
+                    <td>{{ row['year'] }}</td>
+                    <td>{{ row['country_name'] }}</td>
+                    <td>{{ row['region'] }}</td>
+                    <td><strong>{{ "%.1f"|format(row['coverage']) }}%</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="result-count" aria-live="polite">Showing {{ countries_table|length }} countries</p>
+        {% else %}
+        <div class="alert alert-info" role="alert" aria-live="polite">
+            No countries met the 90% vaccination target for {{ selected_antigen }} in {{ selected_year }}.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Table 2: Count of countries per region -->
+    <div class="table-container">
+        <h4>Countries Meeting Target by Region</h4>
+        {% if regions_table %}
+        <table class="data-table" role="table" aria-label="Count of countries meeting 90% target per region">
+            <thead>
+                <tr>
+                    <th scope="col">Antigen</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">Countries Meeting Target</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in regions_table %}
+                <tr>
+                    <td>{{ row['antigen'] }}</td>
+                    <td>{{ row['year'] }}</td>
+                    <td>{{ row['region'] }}</td>
+                    <td><strong>{{ row['country_count'] }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info" role="alert" aria-live="polite">
+            No regional data available for the selected criteria.
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Instructions when no filters applied yet -->
+{% if not selected_year or not selected_antigen %}
+<section class="info-box">
+    <h3>How to Use This Page</h3>
+    <p>Select a year and antigen type from the dropdown menus above, then click "Apply Filters" to view:</p>
+    <ul>
+        <li>All countries that achieved at least 90% vaccination coverage</li>
+        <li>A summary showing how many countries per region met this target</li>
+    </ul>
+</section>
+{% endif %}
+{% endblock %}
