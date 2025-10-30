@@ -1,5 +1,0 @@
-# ignore local data files
-*.db
-*.sqlite
-*.sqlite3
-*.xlsx
