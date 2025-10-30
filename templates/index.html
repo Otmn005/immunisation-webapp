@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="intro-section">
+    <h2>Welcome to the Immunisation Dashboard</h2>
+    <p class="intro-text">
+        Explore comprehensive vaccination and infection data from around the world. 
+        This dashboard provides insights into global immunisation efforts and helps 
+        stakeholders make informed decisions about preventable infectious diseases.
+    </p>
+</section>
+
+<!-- Navigation cards for A-Level pages -->
+<section class="card-grid" aria-label="A-Level pages navigation">
+    <h3>A-Level: Vaccination Analysis</h3>
+    <div class="cards">
+        <article class="card">
+            <h4>A-Level 1: Landing Page</h4>
+            <p>View key vaccination insights and database overview including timeframes, total vaccinations, and disease types.</p>
+            <a href="{{ url_for('a_level1') }}" class="btn" aria-label="Go to A-Level 1">View Landing Page</a>
+        </article>
+
+        <article class="card">
+            <h4>A-Level 2: Coverage Analysis</h4>
+            <p>Explore vaccination coverage rates by country and region. Filter by year and antigen to see which countries meet 90% targets.</p>
+            <a href="{{ url_for('a_level2') }}" class="btn" aria-label="Go to A-Level 2">Analyze Coverage</a>
+        </article>
+
+        <article class="card">
+            <h4>A-Level 3: Improvement Trends</h4>
+            <p>Identify countries with the biggest improvements in vaccination rates over time for specific antigens.</p>
+            <a href="{{ url_for('a_level3') }}" class="btn" aria-label="Go to A-Level 3">View Improvements</a>
+        </article>
+    </div>
+</section>
+
+<!-- Navigation cards for B-Level pages -->
+<section class="card-grid" aria-label="B-Level pages navigation">
+    <h3>B-Level: Infection Data Analysis</h3>
+    <div class="cards">
+        <article class="card">
+            <h4>B-Level 1: Mission Statement</h4>
+            <p>Learn about our project's purpose, target personas, and how this dashboard addresses global health challenges.</p>
+            <a href="{{ url_for('b_level1') }}" class="btn" aria-label="Go to B-Level 1">Read Mission</a>
+        </article>
+
+        <article class="card">
+            <h4>B-Level 2: Economic Analysis</h4>
+            <p>Examine infection data filtered by economic status. Compare cases per 100,000 people across different economies.</p>
+            <a href="{{ url_for('b_level2') }}" class="btn" aria-label="Go to B-Level 2">Analyze by Economy</a>
+        </article>
+
+        <article class="card">
+            <h4>B-Level 3: Above Average Rates</h4>
+            <p>Find countries with infection rates exceeding the global average for specific diseases and years.</p>
+            <a href="{{ url_for('b_level3') }}" class="btn" aria-label="Go to B-Level 3">View Analysis</a>
+        </article>
+    </div>
+</section>
+
+<section class="info-box">
+    <h3>About This Project</h3>
+    <p>
+        This web application is developed for Python Programming Bootcamp. 
+        It demonstrates database integration, data analysis, and web development skills using 
+        Flask and SQLite to investigate preventable infectious diseases worldwide.
+    </p>
+</section>
+{% endblock %}
