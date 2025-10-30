@@ -1,41 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Global Immunization Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f6f9fa; color: #222; margin: 40px; }
-        header { border-bottom: 2px solid #e6e6e6; padding-bottom: 12px; margin-bottom: 24px; }
-        .facts { background: #d0e7ff; border-radius: 10px; padding: 24px; margin-bottom: 32px; }
-        h1 { color: #1565c0; }
-        h2 { color: #1976d2; }
-        ul { margin-top: 12px; }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Welcome to the Global Immunization Dashboard</h1>
-        <p>Stay informed about vaccination coverage and disease prevention worldwide.</p>
-    </header>
 
-    <section>
-        <h2>What You'll Find Here:</h2>
-        <ul>
-            <li>Vaccination data coverage from 2000 to 2024</li>
-            <li>Total doses administered and cases tracked each year</li>
-            <li>Interactive data on preventable diseases and vaccine coverage</li>
-            <li>Insights by country, region, and disease type</li>
-        </ul>
-    </section>
+{% extends "base.html" %}
 
-    <section class="facts">
-        <h2>Key Vaccination Facts</h2>
-        <ul>
-            <li><strong>Timeframe Covered:</strong> Vaccination data available from 2000 to 2024.</li>
-            <li><strong>Total Number of Vaccines Administered:</strong> Millions of doses have been recorded across all countries and years.</li>
-            <li><strong>Total Number of Cases of Preventable Diseases:</strong> Cases for diseases such as measles, rubella, diphtheria, and more are tracked annually.</li>
-            <li><strong>List of Infectious Diseases Tracked:</strong> DTP (Diphtheria, Tetanus, Pertussis), Measles (MCV1, MCV2), Rubella (RCV1), Hepatitis B, Polio, and more.</li>
-        </ul>
-    </section>
-</body>
-</html>
+{% block title %}A-Level 1 - Landing Page{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h2>Welcome to Our Vaccination Data Portal</h2>
+    <p>Discover key insights about global immunisation efforts and preventable infectious diseases.</p>
+</section>
+
+<!-- Error message display if database connection fails -->
+{% if error_message %}
+<div class="alert alert-error" role="alert" aria-live="polite">
+    <strong>Error:</strong> {{ error_message }}
+</div>
+{% endif %}
+
+<!-- Display 4 key vaccination insights as required -->
+<section class="insights-grid">
+    <h3>Key Vaccination Insights</h3>
+    
+    <div class="cards">
+        <!-- Insight 1: Timeframe covered by database -->
+        <article class="card insight-card">
+            <div class="icon">📅</div>
+            <h4>Data Timeframe</h4>
+            {% if year_range %}
+            <p class="stat-large">{{ year_range }}</p>
+            <p class="stat-label">Years of vaccination data available</p>
+            {% else %}
+            <p class="no-data">Data not available</p>
+            {% endif %}
+        </article>
+
+        <!-- Insight 2: Total vaccination records -->
+        <article class="card insight-card">
+            <div class="icon">💉</div>
+            <h4>Total Vaccination Records</h4>
+            {% if total_vaccinations %}
+            <p class="stat-large">{{ "{:,}".format(total_vaccinations) }}</p>
+            <p class="stat-label">Vaccination data points in database</p>
+            {% else %}
+            <p class="no-data">Data not available</p>
+            {% endif %}
+        </article>
+
+        <!-- Insight 3: Number of infectious diseases tracked -->
+        <article class="card insight-card">
+            <div class="icon">🦠</div>
+            <h4>Diseases Tracked</h4>
+            {% if disease_count %}
+            <p class="stat-large">{{ disease_count }}</p>
+            <p class="stat-label">Preventable infectious diseases monitored</p>
+            {% else %}
+            <p class="no-data">Data not available</p>
+            {% endif %}
+        </article>
+
+        <!-- Insight 4: List of all infectious diseases -->
+        <article class="card insight-card full-width">
+            <div class="icon">📋</div>
+            <h4>Infectious Diseases Covered</h4>
+            {% if diseases %}
+            <div class="disease-list">
+                {% for disease in diseases %}
+                <span class="disease-tag">{{ disease['description'] }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">No disease data available</p>
+            {% endif %}
+        </article>
+    </div>
+</section>
+
+<!-- Mission overview -->
+<section class="info-box">
+    <h3>Our Mission</h3>
+    <p>
+        This dashboard provides comprehensive, unbiased information about global vaccination efforts 
+        and preventable infectious diseases. We aim to empower health policymakers, researchers, 
+        and educators with data-driven insights to improve public health outcomes worldwide.
+    </p>
+</section>
+
+<!-- Call to action -->
+<section class="cta-section">
+    <h3>Explore the Data</h3>
+    <div class="button-group">
+        <a href="{{ url_for('a_level2') }}" class="btn btn-primary" aria-label="Analyze vaccination coverage">Analyze Vaccination Coverage</a>
+        <a href="{{ url_for('b_level2') }}" class="btn btn-secondary" aria-label="View infection data">View Infection Data</a>
+    </div>
+</section>
+{% endblock %}
