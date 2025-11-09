@@ -1,135 +1,107 @@
 
 {% extends "base.html" %}
 
-{% block title %}A-Level 3 - Improvement Analysis{% endblock %}
+{% block title %}B-Level 1 - Mission Statement{% endblock %}
 
 {% block content %}
 <section class="page-header">
-    <h2>Vaccination Rate Improvement Analysis</h2>
-    <p>Identify countries with the biggest improvements in vaccination coverage over time.</p>
+    <h2>Our Mission Statement</h2>
+    <p>Understanding our purpose and the people we serve</p>
 </section>
 
-<!-- Error message display -->
-{% if error_message %}
-<div class="alert alert-error" role="alert" aria-live="polite">
-    <strong>Error:</strong> {{ error_message }}
-</div>
-{% endif %}
-
-<!-- Filter form -->
-<section class="filter-section">
-    <h3>Analysis Parameters</h3>
-    <form method="POST" action="{{ url_for('a_level3') }}" class="filter-form">
-        <div class="form-row">
-            <div class="form-group">
-                <label for="start_year">Start Year:</label>
-                <select id="start_year" name="start_year" required aria-label="Select start year" aria-required="true">
-                    <option value="">-- Choose start year --</option>
-                    {% for year in years %}
-                    <option value="{{ year }}" {% if start_year and start_year == year|string %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="end_year">End Year:</label>
-                <select id="end_year" name="end_year" required aria-label="Select end year" aria-required="true">
-                    <option value="">-- Choose end year --</option>
-                    {% for year in years %}
-                    <option value="{{ year }}" {% if end_year and end_year == year|string %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="antigen">Antigen Type:</label>
-                <select id="antigen" name="antigen" required aria-label="Select antigen type" aria-required="true">
-                    <option value="">-- Choose an antigen --</option>
-                    {% for antigen in antigens %}
-                    <option value="{{ antigen }}" {% if selected_antigen == antigen %}selected{% endif %}>{{ antigen }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="top_n">Number of Countries:</label>
-                <input type="number" id="top_n" name="top_n" min="1" max="50" value="{{ top_n }}" required 
-                       aria-label="Number of top countries to display" aria-required="true">
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary" aria-label="Analyze vaccination improvements">Analyze Improvements</button>
-    </form>
+<!-- Mission statement -->
+<section class="mission-section">
+    <h3>Project Purpose</h3>
+    <div class="content-box">
+        <p class="mission-text">
+            Vaccination has been a pivotal method in eradicating diseases like smallpox and achieving 
+            global herd immunity for others, such as polio. The World Health Organization (WHO) gathers 
+            data from member countries to assess vaccination rates, incident rates, and mortality rates 
+            for preventable diseases.
+        </p>
+        <p class="mission-text">
+            Our Immunisation Dashboard allows various stakeholders to explore detailed and unbiased 
+            vaccination data. We present this information in an informative, respectful, and unbiased 
+            manner, catering to a diverse range of users who are seeking to become more informed on 
+            this critical public health topic.
+        </p>
+        <p class="mission-text">
+            By using our website, users can become well-informed about global immunisation efforts 
+            and their impacts, enabling data-driven decisions to improve public health outcomes worldwide.
+        </p>
+    </div>
 </section>
 
-<!-- Results section -->
-{% if start_year and end_year and selected_antigen %}
-<section class="results-section">
-    <h3>Top Countries with Biggest Improvement: {{ selected_antigen }} ({{ start_year }} - {{ end_year }})</h3>
+<!-- How to use the site -->
+<section class="usage-section">
+    <h3>How to Use This Dashboard</h3>
+    <div class="cards">
+        <article class="card">
+            <h4>📊 Explore Data</h4>
+            <p>Navigate through different levels (A1-A3, B1-B3) to access various analyses of vaccination and infection data.</p>
+        </article>
+        <article class="card">
+            <h4>🔍 Filter & Analyze</h4>
+            <p>Use interactive filters to focus on specific years, countries, regions, antigens, or economic statuses.</p>
+        </article>
+        <article class="card">
+            <h4>📈 View Insights</h4>
+            <p>Examine tables and summaries to understand vaccination coverage rates, infection rates, and trends over time.</p>
+        </article>
+    </div>
+</section>
 
-    {% if results %}
+<!-- Target personas (static) -->
+<section class="personas-section">
+    <h3>Our Target Personas</h3>
+    <div class="cards">
+        <article class="card persona-card">
+            <h4>Health Policy Makers</h4>
+            <p>Government officials analyzing vaccination program effectiveness to make informed public health decisions.</p>
+        </article>
+        <article class="card persona-card">
+            <h4>Medical Researchers</h4>
+            <p>Scientists studying disease prevention patterns, vaccination efficacy, and global health trends.</p>
+        </article>
+        <article class="card persona-card">
+            <h4>Public Health Educators</h4>
+            <p>Educators seeking data to inform communities about the importance of vaccination and infectious disease prevention.</p>
+        </article>
+    </div>
+</section>
+
+<!-- Team members (static) -->
+<section class="team-section">
+    <h3>Project Team</h3>
     <div class="table-container">
-        <table class="data-table" role="table" aria-label="Countries with largest vaccination rate improvements">
+        <table class="data-table" role="table" aria-label="Project team members">
             <thead>
                 <tr>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Country</th>
-                    <th scope="col">Coverage Increase (%)</th>
-                    <th scope="col">Start Coverage ({{ start_year }})</th>
-                    <th scope="col">End Coverage ({{ end_year }})</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Student ID</th>
                 </tr>
             </thead>
             <tbody>
-                {% for row in results %}
                 <tr>
-                    <td><strong>{{ loop.index }}</strong></td>
-                    <td>{{ row['country_name'] }}</td>
-                    <td class="highlight"><strong>+{{ "%.2f"|format(row['rate_increase']) }}%</strong></td>
-                    <td>{{ "%.1f"|format(row['start_coverage']) }}%</td>
-                    <td>{{ "%.1f"|format(row['end_coverage']) }}%</td>
+                    <td>Mohamad Otman</td>
+                    <td>s4091213</td>
                 </tr>
-                {% endfor %}
+                <tr>
+                    <td>Ahnab</td>
+                    <td>s4200011</td>
+                </tr>
             </tbody>
         </table>
-        <p class="result-count" aria-live="polite">Showing top {{ results|length }} countries</p>
     </div>
-
-    <!-- Summary information -->
-    <div class="info-box">
-        <h4>Analysis Summary</h4>
-        <p>
-            This analysis shows countries that achieved the highest increase in {{ selected_antigen }} 
-            vaccination coverage between {{ start_year }} and {{ end_year }}. A positive coverage increase 
-            indicates improved vaccination rates during this period.
-        </p>
-    </div>
-    {% else %}
-    <div class="alert alert-info" role="alert" aria-live="polite">
-        No improvement data found for {{ selected_antigen }} between {{ start_year }} and {{ end_year }}. 
-        This may occur if:
-        <ul>
-            <li>No countries showed improvement during this period</li>
-            <li>Data is unavailable for the selected years</li>
-            <li>The end year is before or same as the start year</li>
-        </ul>
-    </div>
-    {% endif %}
 </section>
-{% endif %}
 
-<!-- Instructions -->
-{% if not start_year or not end_year or not selected_antigen %}
-<section class="info-box">
-    <h3>How to Use This Analysis</h3>
-    <ol>
-        <li>Select a <strong>start year</strong> and <strong>end year</strong> to define the time period</li>
-        <li>Choose an <strong>antigen type</strong> (e.g., MCV1, DTP3, RCV1)</li>
-        <li>Specify how many <strong>top countries</strong> you want to see (1-50)</li>
-        <li>Click "Analyze Improvements" to view countries with the biggest coverage increases</li>
-    </ol>
-    <p>This helps identify which countries have made the most progress in vaccination programs.</p>
+<!-- Call to action -->
+<section class="cta-section">
+    <h3>Start Exploring</h3>
+    <div class="button-group">
+        <a href="{{ url_for('b_level2') }}" class="btn btn-primary" aria-label="Analyze infection data by economic status">Analyze Infection Data</a>
+        <a href="{{ url_for('a_level2') }}" class="btn btn-secondary" aria-label="View vaccination coverage">View Vaccination Coverage</a>
+    </div>
 </section>
-{% endif %}
 {% endblock %}
+
